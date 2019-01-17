@@ -1,9 +1,11 @@
 import React from "react";
 import { Provider } from "mobx-react";
 import { moviesPageStore } from "../stores/moviesPageStore";
-import MoviesScreen from "./screens/MoviesScreen";
+import MoviesScreen from "./screens/MoviesScreen/MoviesScreen";
 
-class Movie extends React.Component {
+class Root extends React.Component {
+
+
     render() {
         return (
             <Provider moviesPageStore={moviesPageStore}>
@@ -13,4 +15,4 @@ class Movie extends React.Component {
     }
 }
 
-export default Movie;
+export default Root;
