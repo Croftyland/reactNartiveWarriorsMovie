@@ -4,8 +4,6 @@ import { moviesPageStore } from "../stores/moviesPageStore";
 import MoviesScreen from "./screens/MoviesScreen/MoviesScreen";
 
 class Root extends React.Component {
-
-
     render() {
         return (
             <Provider moviesPageStore={moviesPageStore}>
