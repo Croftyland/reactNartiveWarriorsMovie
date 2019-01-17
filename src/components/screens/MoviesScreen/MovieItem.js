@@ -58,6 +58,7 @@ class MovieItem extends React.Component {
                     }}
                 />
                 <Text style={styles.title}>{item.title}</Text>
+                <Text style={styles.title}>Рейтинг:{item.vote_average}</Text>
             </Animated.View>
         );
     }
@@ -66,8 +67,7 @@ class MovieItem extends React.Component {
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
-        marginBottom: 20,
-        padding: 20,
+        padding: 15,
         flex: 1,
         backgroundColor: "#fff",
         borderWidth: 1,
