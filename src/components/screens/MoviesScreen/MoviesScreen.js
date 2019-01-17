@@ -4,23 +4,25 @@ import { inject, observer } from "mobx-react";
 import MovieItem from "./MovieItem";
 import { Filters } from "./Filters";
 
-@inject("moviesPageStore")
+@inject("moviesPageStore","userStore")
 @observer
 class MoviesScreen extends React.Component {
-    componentDidMount() {
-        this.props.moviesPageStore.getMovies();
-    }
-    componentWillUnmount() {
-        console.log("unmount MoviesScreen");
-    }
 
     render() {
         const {
-            moviesPageStore: { isLoading, movies }
+            moviesPageStore: { isLoading, movies },
+            userStore: {
+                toggleLoginButton,
+            },
         } = this.props;
         return (
             <View style={styles.container}>
                 <Filters />
+                <Button
+                    onPress={toggleLoginButton}
+                    title="Login"
+                    color="red"
+                />
                 {isLoading ? (
                     <Text>...loading</Text>
                 ) : (
