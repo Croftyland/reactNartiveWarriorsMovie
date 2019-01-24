@@ -1,94 +1,130 @@
-import React from "react";
-import { View, KeyboardAvoidingView, TextInput,StyleSheet,Button} from 'react-native';
-import { inject, observer } from "mobx-react";
+import React from 'react';
+import { reaction, values } from 'mobx';
+import { View, StyleSheet, Vibration } from 'react-native';
+import {
+  FormLabel, FormInput, FormValidationMessage, Button,
+} from 'react-native-elements';
+import { inject, observer } from 'mobx-react';
+import * as Animatable from 'react-native-animatable';
 
-@inject('loginFormStore')
-
+@inject('loginStore', 'userStore')
 @observer
 class LoginScreen extends React.Component {
-    onChangeText={(inputValue) => {
-    this.props.store.onChange({ name: "username",  value: inputValue})
+  constructor(props) {
+    super(props);
+    this.buttonSubmitRef = React.createRef();
+    reaction(() => values(props.loginStore.errors), () => {
+      if (props.loginStore.hasError) {
+        this.buttonSubmitRef.current.shake(1000);
+        Vibration.vibrate(200);
+      }
+    });
+  }
 
-    render() {
 
-        const {
-            loginFormStore: {
-                onLogin,
-                onChangeInput,
-                handleBlur,
-                username,
-                password,
-                repeatPassword,
+  // onLogin = () => {
+  //   if (this.props.loginStore.hasError)
+  // }
 
-            },
-        } = this.props;
+  render() {
+    const {
+      loginStore: {
+        onChangeInput,
+        handleBlur,
+        username,
+        password,
+        errors,
+        onLogin,
+      },
 
-        return (
+    } = this.props;
+    return (
+      <View style={styles.container}>
 
-            <KeyboardAvoidingView behavior="padding" style={styles.container}>
-            <View style={styles.container}>
-                <TextInput style = {styles.input}
-                           autoCapitalize="none"
-                           value={username}
-                           onChange={onChangeInput(username)}
-                           onBlur={handleBlur}
-                           keyboardType='email-address'
-                           returnKeyType="next"
-                           placeholder='Email'
-                           placeholderTextColor='rgb(225,225,225)'/>
+        <View style={styles.form}>
 
-                <TextInput style = {styles.input}
-                           returnKeyType="go"
-                           value={password}
-                           onChangeText={onChangeInput}
-                           onBlur={handleBlur}
-                           placeholder='Password'
-                           placeholderTextColor='rgb(225,225,225)'
-                           secureTextEntry/>
+          <View>
+            <FormLabel>Login</FormLabel>
+            <FormInput
 
-                <TextInput style = {styles.input}
-                           returnKeyType="go"
-                           value={repeatPassword}
-                           onChangeText={onChangeInput}
-                           onBlur={handleBlur}
-                           placeholder='Repeat Password'
-                           placeholderTextColor='rgb(225,225,225)'
-                           secureTextEntry/>
-                <Button
-                    style = {styles.button}
-                    title="Login"
-                    onPress={onLogin}
-                />
-            </View>
-            </KeyboardAvoidingView>
-        );
-    }
+              placeholder="Пользователь"
+              value={username}
+              onChangeText={(inputValue) => {
+                onChangeInput({ name: 'username', value: inputValue });
+              }}
+              onBlur={() => {
+                handleBlur();
+              }}
+            />
+            {errors.username && (
+            <FormValidationMessage>{errors.username}</FormValidationMessage>
+            )}
+          </View>
+
+          <View>
+            <FormLabel>Password</FormLabel>
+            <FormInput
+
+              placeholder="Пользователь"
+              value={password}
+              onChangeText={(inputValue) => {
+                onChangeInput({ name: 'password', value: inputValue });
+              }}
+              onBlur={() => {
+                handleBlur();
+              }}
+            />
+            {errors.password && (
+            <FormValidationMessage>{errors.password}</FormValidationMessage>
+            )}
+          </View>
+
+
+        </View>
+
+        <Animatable.View
+          ref={this.buttonSubmitRef}
+        >
+          <Button
+            icon={{ name: 'check', type: 'font-awesome' }}
+            title="Submit"
+            onPress={onLogin}
+            buttonStyle={{
+              borderRadius: 20, width: 300, height: 50, marginTop: 20,
+            }}
+          />
+        </Animatable.View>
+
+
+        <View
+          style={styles.baseError}
+        >
+          {errors.base && (
+          <FormValidationMessage>{errors.base}</FormValidationMessage>
+          )}
+        </View>
+
+      </View>
+    );
+  }
 }
-
-const styles = StyleSheet.create({
-    container: {
-        padding: 20,
-        flexGrow: 1,
-        justifyContent: 'center',
-        backgroundColor: 'rgba(1,21,80,1)',
-    },
-    input: {
-        height: 40,
-        backgroundColor: 'rgba(225,225,225,0.8)',
-        marginBottom: 10,
-        padding: 10,
-        color: 'black'
-    },
-    loginContainer:{
-        alignItems: 'center',
-        flexGrow: 1,
-        justifyContent: 'center'
-    },
-    button:{
-        backgroundColor: '#2980b6',
-        paddingVertical: 15
-    },
-})
-
 export default LoginScreen;
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  form: {
+    flex: 0.5,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    width: 400,
+  },
+  baseError: {
+    flex: 1,
+  },
+
+});
